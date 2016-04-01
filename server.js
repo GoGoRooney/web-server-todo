@@ -1,27 +1,15 @@
 var express = require('express');
-
+var bodyParser = require('body-parser');
 var app = express();
 
 var PORT  = process.env.PORT || 3000;
 
-var todos = [{
-	description: 'ring hairdressers',
-	completed: false,
-	id: 1
-},
-{
-	description:'send cv',
-	completed: false,
-	id: 2
-},
-{
-	description:'cut grass',
-	completed: true,
-	id: 3
-}
-];
 
+var todos = [];
 
+var todoNextId = 1;
+
+app.use(bodyParser.json());
 
 
 app.get('/', function (req,res) {
@@ -58,9 +46,29 @@ app.get('/todos/:id', function(req,res) {
 		res.status(404).send();
 	}
 	
-	
 });
 
+
+// POST
+
+app.post('/todos', function(req,res) {
+	var body = req.body;
+
+	console.log('description' + body.description);
+
+	res.json(body);
+
+	var newTodo = {
+		id: todoNextId,
+		description: body.description,
+		completed: body.completed,
+	};
+
+	todoNextId = todoNextId + 1;
+
+	todos.push(newTodo);
+
+});
 
 
 app.listen(PORT, function () {
