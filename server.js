@@ -51,22 +51,20 @@ app.get('/todos', function(req,res) {
 
 
 app.get('/todos/:id', function(req,res) {
-
-	console.log('here');
 	var todoId = parseInt(req.params.id, 10);
-	var matchedTodo;
 
-	console.log('id = '+todoId);
 
-	matchedTodo = _.findWhere(todos, {id:todoId});
+	console.log('looking for '+todoId);
+	db.todo.findById(todoId).then (function (todo) {
+			if (!!todo) {
+				res.json(todo.toJSON());
+			} else {
+				res.status(404).send();
+			}
+	}, function (e) {
+		res.status(50).send();
+	});
 
-	if (matchedTodo) {
-		console.log('found')
-		res.json(matchedTodo);	
-	} else {
-		res.status(404).send();
-	}
-	
 });
 
 
