@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<header>
+    <title>Freie Termine Applikation</title>
+    <link rel="stylesheet" href="./style.css">
+    <h1>Pick a menuoption:</h1>
+    <nav>
+    	<ul>
+    		<li><a [routerLink]="['UserLogin']">Login User</a>
+    		<li><a [routerLink]="['UserPreference']">User Preferences</a>
+    		<li><a [routerLink]="['BusinessLogin']">Login Business</a>
+    		<li><a [routerLink]="['BusinessPreference']">Business Perferences</a>
+    		<li><a [routerLink]="['BusinessAppointment']">Manage Business Appointments</a>
+    		<li><a [routerLink]="['SearchCriteria']">Search Filter</a>
+    		<li><a [routerLink]="['SearchResult']">Search Results</a>
+    		<li><a [routerLink]="['ViewAppointment']">View an Appointment</a>
+    		<li><a [routerLink]="['BookAppointment']">Book an Appointemnt</a>
+    	</ul>
+    </nav>
+</header>
+<body>
+<router-outlet></router-outlet>
+</body>
+<footer>
+app footer
+</footer>

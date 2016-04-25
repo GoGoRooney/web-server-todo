@@ -1,0 +1,16 @@
+<body>
+<form>
+ <fieldset>
+        <legend>Test Todo API</legend>
+        <p>Description <input name="description" #description></p>
+  		<p>Completed <select name="complete" #completed>
+		<option value="true">Yes</option>
+        <option value="false">Nope</option>
+		</select></p>
+</fieldset>
+<button (click)="onPost(description.value, completed.value)">Add ToDo</button>
+
+{{response}}
+
+</form>	
+</body>
