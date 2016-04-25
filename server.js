@@ -14,6 +14,11 @@ var todos = [];
 
 var todoNextId = 1;
 
+
+console.log(__dirname+'/client');
+
+app.use( express.static(__dirname+'/client'));
+
 app.use(bodyParser.json());
 
 
