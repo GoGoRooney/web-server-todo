@@ -225,7 +225,7 @@ if (mustCreate) {
 	fifth.length= 30; 
 	fifth.bookingStatus= 'free';
 	
-	var CalendarDays = mongoose.model('CalendarDays', CalendarDaysSchema);
+	var CalendarDays = mongoose.model('CalendarDays', calendarDaysSchema);
 	var monday = new CalendarDays();
 	monday.dayName = 'Monday';
 	monday.timeUnitsSize='0.5';
@@ -246,22 +246,8 @@ if (mustCreate) {
 	tuesday.timeSlots.push(fourth);
 	tuesday.timeSlots.push(fifth);
 
-	var WorksCalendar = mongoose.model('Calendar', calendarYearSchema);
-	var worksCal = new WorksCalendar();
-	worksCal.year = '2016';
-	worksCal.calendarDays = [];
-	worksCal.push(monday);
-	worksCal.push(tueday);
-	worker.calendar = [];
-	worker.calendar.push(worksCal);
-
-	worker.save(function(err) {
-		if (err) return console.error(err);
-		console.dir(worker);
-	});
-
 	business.workers = [];
-	business.workers.push(worker);
+	business.workers.push(workerVar);
 	business.save(function(err) {
 		if (err) return console.error(err);
 		console.dir(business);
