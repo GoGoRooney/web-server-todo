@@ -22,14 +22,16 @@ function WorkerSchema() {
 		worker.priceLevel = priceLevel;
 		worker.pictureUrl = url;
 		worker.save(function(err) {
-			if (err) return console.error('Error occured while creating worker schema '+err);
+			if (err) {
+				return callback(err);
+			}
 			console.log('Created worker');
 			}	
 		);
 
  		if (typeof callback === "function") {
  			console.log('caling function------>');
-			callback(worker);
+			callback(null, worker);
 		} else {
 			console.log('callback is not a function');
 		}
