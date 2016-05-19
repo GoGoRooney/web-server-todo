@@ -21,7 +21,15 @@ this.urlStr='/searchList';
 
 	return mongoose.model('searchList', SearchListSchema);	
 	}
-
+this.getFunction = function(req, res, next) {
+	m.find({}, function (err, docs) {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json(docs);		
+		}
+	});
+}
 	var m = this.newSchema();
 
 this.postFunction = function(req, res, next) {

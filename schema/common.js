@@ -1,9 +1,10 @@
 function commonModel() {
-this.postFunction = function(model, req, res, next) {
+this.postFunction = function(req, res, next) {
  	
 	var _ = require('underscore');
 	
-console.log(model);
+	
+	var model = new m();
 
 	var fields = [];
 	fields = Object.keys(model.schema.paths);

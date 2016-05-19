@@ -20,6 +20,16 @@ this.urlStr='/businessHours';
 	
 var m = this.newSchema();
 
+this.getFunction = function(req, res, next) {
+	m.find({}, function (err, docs) {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json(docs);		
+		}
+	});
+}
+
 this.postFunction = function(req, res, next) {
  	
 	var _ = require('underscore');

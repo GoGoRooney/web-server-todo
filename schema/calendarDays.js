@@ -17,8 +17,15 @@ this.urlStr='/calendarDays';
  	return mongoose.model('calendarDays',CalendarDays);
 	}
 
-this.urlStr = function() {
-	return '/calendarDays';
+
+this.getFunction = function(req, res, next) {
+	m.find({}, function (err, docs) {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json(docs);		
+		}
+	});
 }
 
 var m = this.newSchema();

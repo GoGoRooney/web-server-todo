@@ -17,11 +17,24 @@ this.urlStr='/worker';
 
 		return mongoose.model('worker', workerSchema);	
 	}
+	
+	var m = this.newSchema();
+
+
+	this.getFunction = function(req, res, next) {
+	m.find({}, function (err, docs) {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json(docs);		
+		}
+	});
+}
 
 this.postFunction = function(req, res, next) {
  	
 	var _ = require('underscore');
-	var m = this.newSchema();
+
 	var model = new m();
 	var fields = [];
 	fields = Object.keys(model.schema.paths);
