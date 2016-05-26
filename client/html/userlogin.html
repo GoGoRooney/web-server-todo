@@ -2,8 +2,12 @@
 <form>
   <fieldset>
         <legend>Login</legend>
-        <p>Login Name <input name="loginName"></p>
-        <p>Password <input name="password"></p>
+        <p>Login Name <input name="loginName" type="text" [(ngModel)]="Customer.loginName" ></p>
+        <p>Password <input name="password" type="text" [(ngModel)]="Customer.passwd"></p>
     </fieldset>
+    <button type="submit" (click)="onLogin()">Login</button>
+    <button type="button" (click)="newCustomer()">Reset</button>
+    <button type="button" (click)="onSubmit()">Register</button>
+    Response: {{response}}
 </form>	
 </body>

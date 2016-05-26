@@ -21,12 +21,12 @@ var db = mongoose.connect(urlStr, function(err, res) {
 app.use(express.static(__dirname+'/client'));
 app.use(bodyParser.json());
 
-app.get('/', function (req,res) {
-	res.send('Freietermine Api Root');
-});
-
 
 mongoose.set('debug', true);
+
+customerService = require("./services/customerService");
+
+app.use('/customer', customerService);
 
 
 var schemas = require("./schema");
@@ -37,12 +37,12 @@ var holidaysPostEndPoint = new schemas.holidaysSchema();
 var reviewsPostEndPoint = new schemas.reviewsSchema();
 var searchListPostEndPoint = new schemas.searchListSchema();
 var timeslotsPostEndPoint = new schemas.timeslotsSchema();
-var customerPostEndPoint = new schemas.customerSchema();
+/*var customerPostEndPoint = new schemas.customerSchema();*/
 var calendarDaysPostEndPoint = new schemas.calendarDaysSchema();
 var hoursWorkedPostEndPoint = new schemas.hoursWorkedSchema();
 
 
-var allPostEndpoints = [hoursWorkedPostEndPoint, customerPostEndPoint, timeslotsPostEndPoint, searchListPostEndPoint, 
+var allPostEndpoints = [hoursWorkedPostEndPoint, timeslotsPostEndPoint, searchListPostEndPoint, 
 reviewsPostEndPoint, holidaysPostEndPoint, businessHoursPostEndPoint, workerPostEndPoint, businessPostEndPoint, calendarDaysPostEndPoint];
 
 
@@ -111,6 +111,10 @@ var getEndPoints = function(req, res, next) {
 
 app.post('/ft/post/*', [postEndPoints]);
 app.get('/ft/get/*', [getEndPoints]);
+
+
+
+
 
 
 app.listen(PORT, function () {
