@@ -1,12 +1,13 @@
 var express = require("express");
+
+
+function mongooseHandler(schemaModel) {
+
+var mongooseModel = schemaModel;
 var router = express.Router();
-var customerSchema = require("../schema/customerSchema");
-var customerMongoosModel = new customerSchema();
-
-
-
 router.get('/', function(req,res) {
-	customerMongoosModel.find({}, function (err, docs) {
+
+	mongooseModel.find({}, function (err, docs) {
 		if (err) {
 			res.status(500).send('Something broke!');
 		} else {
@@ -18,7 +19,7 @@ router.get('/', function(req,res) {
 	console.log('customer posting ');
 	var _ = require('underscore');
 
-	var newModel = new customerMongoosModel();
+	var newModel = new mongooseModel();
 
 	var fields = [];
 	fields = Object.keys(newModel.schema.paths);
@@ -43,33 +44,36 @@ console.log(newModel);
 	var _ = require('underscore');
 	
 	var fields = [];
-	fields = Object.keys(customerMongoosModel.schema.paths);
+	fields = Object.keys(mongooseModel.schema.paths);
 
 	var body = _.pick(req.body, fields);
 	fields.forEach(function(field){
 		if (typeof body[field] === 'undefined') {
 			// nop
 		} else {
-			customerMongoosModel[field] = body[field];
+			mongooseModel[field] = body[field];
 		}
 	});
 	
-	customerMongoosModel.save(function(err) {
+	mongooseModel.save(function(err) {
 		if (err) return console.error(err);
-		res.json(customerMongoosModel.toJSON());
+		res.json(mongooseModel.toJSON());
 	});
 }).get("/:loginName", function(req, res) {
 
 	console.log('loginname...');
 
 	var customerId = req.params.loginName;
-	customerMongoosModel.find({"loginName": customerId}, function (err, docs) {
+	mongooseModel.find({"loginName": customerId}, function (err, docs) {
 		if (err) {
 			res.status(500).send('Something broke!');
 		} else {
 			res.json(docs);		
 		}
-	})
-});
+		})
+	});
 
-module.exports = router;
+	return router;
+};
+
+module.exports = mongooseHandler;

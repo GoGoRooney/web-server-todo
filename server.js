@@ -5,6 +5,8 @@ var mongoose = require('mongoose');
 var express = require('express');
 var bodyParser = require('body-parser');
 var _ = require('underscore');
+var Schema = mongoose.Schema;
+
 
 var app = express();
 var PORT  = process.env.PORT || 3000;
@@ -21,100 +23,51 @@ var db = mongoose.connect(urlStr, function(err, res) {
 app.use(express.static(__dirname+'/client'));
 app.use(bodyParser.json());
 
+var maker = require('./services/mongooseModelBuilder'); 
+var newSchemas = require("./schemas");
+var mongooseCRUDService = require('./services/mongooseCRUDService'); 
 
 mongoose.set('debug', true);
 
-customerService = require("./services/customerService");
+var mongooseModelBuilder = new maker('business', new newSchemas.businessSchema('business'));
+var mongooseModel = mongooseModelBuilder.make();
+app.use('/business', new mongooseCRUDService(mongooseModel));
 
-app.use('/customer', customerService);
+mongooseModelBuilder = new maker('customer', new newSchemas.customerSchema('customer'));
+mongooseModel = mongooseModelBuilder.make();
+app.use('/customer', new mongooseCRUDService(mongooseModel));
 
+mongooseModelBuilder = new maker('worker', new newSchemas.workerSchema('worker'));
+mongooseModel = mongooseModelBuilder.make();
+app.use('/worker',  new mongooseCRUDService(mongooseModel));
 
-var schemas = require("./schema");
-var businessPostEndPoint = new schemas.businessSchema();
-var workerPostEndPoint = new schemas.workerSchema();
-var businessHoursPostEndPoint = new schemas.businessHoursSchema();
-var holidaysPostEndPoint = new schemas.holidaysSchema();
-var reviewsPostEndPoint = new schemas.reviewsSchema();
-var searchListPostEndPoint = new schemas.searchListSchema();
-var timeslotsPostEndPoint = new schemas.timeslotsSchema();
-/*var customerPostEndPoint = new schemas.customerSchema();*/
-var calendarDaysPostEndPoint = new schemas.calendarDaysSchema();
-var hoursWorkedPostEndPoint = new schemas.hoursWorkedSchema();
+mongooseModelBuilder = new maker('businessHours', new newSchemas.businessHoursSchema('businessHours'));
+mongooseModel = mongooseModelBuilder.make();
+app.use('/businessHours', new mongooseCRUDService(mongooseModel));
 
+mongooseModelBuilder = new maker('calendarDays', new newSchemas.calendarDaysSchema('calendarDays'));
+mongooseModel = mongooseModelBuilder.make();
+app.use('/calendarDays', new mongooseCRUDService(mongooseModel));
 
-var allPostEndpoints = [hoursWorkedPostEndPoint, timeslotsPostEndPoint, searchListPostEndPoint, 
-reviewsPostEndPoint, holidaysPostEndPoint, businessHoursPostEndPoint, workerPostEndPoint, businessPostEndPoint, calendarDaysPostEndPoint];
+mongooseModelBuilder = new maker('holidays', new newSchemas.holidaysSchema('holidays'));
+mongooseModel = mongooseModelBuilder.make();
+app.use('/holidays', new mongooseCRUDService(mongooseModel));
 
+mongooseModelBuilder = new maker('hoursWorked', new newSchemas.hoursWorkedSchema('hoursWorked'));
+mongooseModel = mongooseModelBuilder.make();
+app.use('/hoursWorked', new mongooseCRUDService(mongooseModel));
 
+mongooseModelBuilder = new maker('reviews', new newSchemas.reviewsSchema('reviews'));
+mongooseModel = mongooseModelBuilder.make();
+app.use('/reviews',  new mongooseCRUDService(mongooseModel));
 
+mongooseModelBuilder = new maker('searchList', new newSchemas.searchListSchema('searchList'));
+mongooseModel = mongooseModelBuilder.make();
+app.use('/searchList', new mongooseCRUDService(mongooseModel));
 
-function checkPostUrl(element, index, array) {
-
-	this.req = checkPostUrl.prototype.req;
-	this.res = checkPostUrl.prototype.res;
-	this.next = checkPostUrl.prototype.next;
-	
-
-	console.log(element.urlStr);
-	console.log(element);
-
-	if (this.req.path.indexOf(element.urlStr, this.req.path.length - element.urlStr.length) !== -1) {
-		element.postFunction(this.req, this.res, this.next);
-	}
-
-
-}
-
-function checkGetUrl(element, index, array) {
-
-	this.req = checkPostUrl.prototype.req;
-	this.res = checkPostUrl.prototype.res;
-	this.next = checkPostUrl.prototype.next;
-	
-
-	console.log(element.urlStr);
-	console.log(element);
-
-	if (this.req.path.indexOf(element.urlStr, this.req.path.length - element.urlStr.length) !== -1) {
-		element.getFunction(this.req, this.res, this.next);
-	}
-
-
-}
-
-var postEndPoints = function(req, res, next) {
-
-	checkPostUrl.prototype.req = req;
-	checkPostUrl.prototype.res = res;
-	checkPostUrl.prototype.next = next;
-
-
-	allPostEndpoints.forEach(checkPostUrl);
-
-	console.log(req.path);
-
-}
-
-var getEndPoints = function(req, res, next) {
-
-	checkPostUrl.prototype.req = req;
-	checkPostUrl.prototype.res = res;
-	checkPostUrl.prototype.next = next;
-
-
-	allPostEndpoints.forEach(checkGetUrl);
-
-	console.log(req.path);
-
-}
-
-
-app.post('/ft/post/*', [postEndPoints]);
-app.get('/ft/get/*', [getEndPoints]);
-
-
-
-
+mongooseModelBuilder = new maker('timeSlots', new newSchemas.timeSlotsSchema('timeSlots'));
+mongooseModel = mongooseModelBuilder.make();
+app.use('/timeSlots',  new mongooseCRUDService(mongooseModel));
 
 
 app.listen(PORT, function () {

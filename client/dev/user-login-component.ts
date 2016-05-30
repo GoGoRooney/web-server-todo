@@ -1,12 +1,15 @@
 import {Component} from 'angular2/core';
 import {NgForm} from 'angular2/common';
 import {Customer} from './customerClass';
+import {InputText} from 'primeng/primeng';
+
 import {UserLoginService} from './UserLoginService';
 import {Http, Response, RequestOptions, Headers, Request, RequestMethod} from 'angular2/http';
 
 @Component({
     selector: 'user-login-app',
     templateUrl: './html/userlogin.html',
+    directives: [InputText],
     providers: [UserLoginService]
 })
 
