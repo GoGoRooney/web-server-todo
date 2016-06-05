@@ -1,18 +1,15 @@
 /* http://localhost:3000/ft/post/hoursWorked oder http://localhost:3000/ft/post/customer, siehe url in schema/*.js */
 
-
 var mongoose = require('mongoose');
 var express = require('express');
 var bodyParser = require('body-parser');
 var _ = require('underscore');
+
 var Schema = mongoose.Schema;
-
-
 var app = express();
 var PORT  = process.env.PORT || 3000;
 
-var urlStr = 'mongodb://localhost/test';
-var db = mongoose.connect(urlStr, function(err, res) {
+mongoose.connect('mongodb://localhost/test', function(err, res) {
 	if (err) {
 		console.log(err);
 	} else {
@@ -20,59 +17,99 @@ var db = mongoose.connect(urlStr, function(err, res) {
 	}
 });
 
+mongoose.set('debug', true);
+
+
+var modelHandler = require('./dbModels.js');
+var auth=require('./services/customerAuthenticate.js');
+var mongooseCRUDService = require('./services/mongooseCRUDService.js');
+var customerModel = {};
+
+
 app.use(express.static(__dirname+'/client'));
 app.use(bodyParser.json());
 
-var maker = require('./services/mongooseModelBuilder'); 
-var newSchemas = require("./schemas");
-var mongooseCRUDService = require('./services/mongooseCRUDService'); 
+modelHandler('customer').then(function(model) {
+	customerModel = model;
+	var service = new mongooseCRUDService(model,model);
+	app.use('/customer',service);
+}, function() {
+	console.log('** error **');
+});
 
-mongoose.set('debug', true);
+modelHandler('business').then(function(model) {
+	app.use('/business', new mongooseCRUDService(model,model) );
+}, function() {
+	console.log('** error **');
+});
 
-var mongooseModelBuilder = new maker('business', new newSchemas.businessSchema('business'));
-var mongooseModel = mongooseModelBuilder.make();
-app.use('/business', new mongooseCRUDService(mongooseModel));
+modelHandler('worker').then(function(model) {
+	app.use('/worker', new mongooseCRUDService(model,model) );
+}, function() {
+	console.log('** error **');
+});
 
-mongooseModelBuilder = new maker('customer', new newSchemas.customerSchema('customer'));
-mongooseModel = mongooseModelBuilder.make();
-app.use('/customer', new mongooseCRUDService(mongooseModel));
+modelHandler('businessHours').then(function(model) {
+	app.use('/businessHours', new mongooseCRUDService(model,model) );
+}, function() {
+	console.log('** error **');
+});
 
-mongooseModelBuilder = new maker('worker', new newSchemas.workerSchema('worker'));
-mongooseModel = mongooseModelBuilder.make();
-app.use('/worker',  new mongooseCRUDService(mongooseModel));
+modelHandler('calendarDays').then(function(model) {
+	app.use('/calendarDays', new mongooseCRUDService(model,model) );
+}, function() {
+	console.log('** error **');
+});
 
-mongooseModelBuilder = new maker('businessHours', new newSchemas.businessHoursSchema('businessHours'));
-mongooseModel = mongooseModelBuilder.make();
-app.use('/businessHours', new mongooseCRUDService(mongooseModel));
+modelHandler('holidays').then(function(model) {
+	app.use('/holidays', new mongooseCRUDService(model,model) );
+}, function() {
+	console.log('** error **');
+});
 
-mongooseModelBuilder = new maker('calendarDays', new newSchemas.calendarDaysSchema('calendarDays'));
-mongooseModel = mongooseModelBuilder.make();
-app.use('/calendarDays', new mongooseCRUDService(mongooseModel));
+modelHandler('hoursWorked').then(function(model) {
+	app.use('/hoursWorked', new mongooseCRUDService(model,model) );
+}, function() {
+	console.log('** error **');
+});
 
-mongooseModelBuilder = new maker('holidays', new newSchemas.holidaysSchema('holidays'));
-mongooseModel = mongooseModelBuilder.make();
-app.use('/holidays', new mongooseCRUDService(mongooseModel));
+modelHandler('reviews').then(function(model) {
+	app.use('/reviews', new mongooseCRUDService(model,model) );
+}, function() {
+	console.log('** error **');
+});
 
-mongooseModelBuilder = new maker('hoursWorked', new newSchemas.hoursWorkedSchema('hoursWorked'));
-mongooseModel = mongooseModelBuilder.make();
-app.use('/hoursWorked', new mongooseCRUDService(mongooseModel));
+modelHandler('searchList').then(function(model) {
+	app.use('/searchList', new mongooseCRUDService(model,model) );
+}, function() {
+	console.log('** error **');
+});
 
-mongooseModelBuilder = new maker('reviews', new newSchemas.reviewsSchema('reviews'));
-mongooseModel = mongooseModelBuilder.make();
-app.use('/reviews',  new mongooseCRUDService(mongooseModel));
 
-mongooseModelBuilder = new maker('searchList', new newSchemas.searchListSchema('searchList'));
-mongooseModel = mongooseModelBuilder.make();
-app.use('/searchList', new mongooseCRUDService(mongooseModel));
+modelHandler('timeSlots').then(function(model) {
+	app.use('/timeSlots', new mongooseCRUDService(model,model) );
+}, function() {
+	console.log('** error **');
+});
 
-mongooseModelBuilder = new maker('timeSlots', new newSchemas.timeSlotsSchema('timeSlots'));
-mongooseModel = mongooseModelBuilder.make();
-app.use('/timeSlots',  new mongooseCRUDService(mongooseModel));
+
+
+// add authentication to header, all requests will be verified with this token. 
+app.post('/users/login', function(req, res) {
+		var body = _.pick(req.body, 'loginName', 'password');
+		if (typeof body.loginName != 'string' || typeof body.password != 'string') {
+				res.status(400).send();
+		}
+		var a = new auth(customerModel, body, body.loginName, 'String').then(
+			function(token) {
+				res.header('Auth', token).status(200).send();
+			}, function () {
+				res.status(401).send();
+			}
+		);
+});
 
 
 app.listen(PORT, function () {
 		console.log('Express listening on port '+PORT);
-	});	
-
-
-console.log('finished');
+});	

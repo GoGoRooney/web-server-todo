@@ -1,22 +1,27 @@
 var express = require("express");
+var jwt = require('jsonwebtoken');
+var mongoose = require('mongoose');
+var requestAuth = require('./customerAuthorisation.js');
+var customerSchema = require('../schemas/customerSchema.js');
+var loginModel = {};
 
+function mongooseHandler(schemaModel, mModel) {
 
-function mongooseHandler(schemaModel) {
+	var mongooseModel = schemaModel;
+	var router = express.Router();
+	loginModel = mModel;
 
-var mongooseModel = schemaModel;
-var router = express.Router();
-router.get('/', function(req,res) {
+	router.get('/', requireAuthentication, function(req,res) {
 
 	mongooseModel.find({}, function (err, docs) {
 		if (err) {
 			res.status(500).send('Something broke!');
 		} else {
-			res.json(docs);		
+			res.json(docs);
 		}
 	})
-}).post('/', function(req, res) {
+}).post('/',requireAuthentication, function(req, res) {
 
-	console.log('customer posting ');
 	var _ = require('underscore');
 
 	var newModel = new mongooseModel();
@@ -33,14 +38,12 @@ router.get('/', function(req,res) {
 		}
 	});
 	
-console.log(newModel);
-
 	newModel.save(function(err) {
 		if (err) return console.error(err);
 		res.json(newModel.toJSON());
 	});
 
-}).put('/',function(req,res) {
+}).put('/',requireAuthentication,function(req,res) {
 	var _ = require('underscore');
 	
 	var fields = [];
@@ -59,7 +62,7 @@ console.log(newModel);
 		if (err) return console.error(err);
 		res.json(mongooseModel.toJSON());
 	});
-}).get("/:loginName", function(req, res) {
+}).get("/:loginName",requireAuthentication,function(req, res) {
 
 	console.log('loginname...');
 
@@ -75,5 +78,16 @@ console.log(newModel);
 
 	return router;
 };
+
+var requireAuthentication = function(req, res, next) {
+	var token = req.get('Auth');
+	var a = requestAuth(loginModel, token).then(
+		function(a) {
+			next();
+		}, function() {
+			res.status(401).send();
+		}
+	);
+}
 
 module.exports = mongooseHandler;
